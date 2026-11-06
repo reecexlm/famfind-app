@@ -60,6 +60,8 @@
   .hero { padding: 40px 0 40px; overflow: hidden; }
   .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
   @media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; } }
+  .hero .wrap { align-items: start; }
+  .hero .wrap > div:first-child { padding-top: 24px; }
   .hero h1 span { color: var(--brand); }
   .hero .lead { margin: 20px 0 28px; }
   .promise { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 32px; padding: 0; list-style: none; }
