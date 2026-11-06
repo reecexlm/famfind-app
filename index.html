@@ -119,6 +119,19 @@
   .fact b { display: block; color: #fff; font-size: 22px; letter-spacing: -0.02em; }
   .fact span { font-size: 15px; color: #9aa6c2; }
 
+
+  .protos { margin-top: 56px; }
+  .protos h3.sub { font-size: 24px; margin-bottom: 8px; }
+  .protos > p { color: #9aa6c2; margin: 0 0 24px; max-width: 720px; }
+  .proto { display: grid; grid-template-columns: 220px 1fr; gap: 24px; padding: 22px 0; border-top: 1px solid #23304f; }
+  @media (max-width: 760px) { .proto { grid-template-columns: 1fr; gap: 8px; } }
+  .proto .name { color: #fff; font-weight: 800; font-size: 20px; letter-spacing: -0.01em; }
+  .proto .name small { display: block; font-weight: 500; font-size: 14px; color: #8DB0FA; margin-top: 4px; letter-spacing: 0; }
+  .proto p { margin: 0; color: #c9d3ea; font-size: 16px; }
+  .proto .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .proto .chips span { font: 600 12px/1 ui-monospace, "SF Mono", Menlo, monospace; color: #8DB0FA; background: #1c2a4a; border-radius: 6px; padding: 6px 8px; }
+  .proto a { color: #8DB0FA; }
+
   /* Features */
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
   @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
@@ -331,7 +344,7 @@
       <div class="layer">
         <span class="tag">decentralized invites · Nostr</span>
         <h3>Invites without a sign-up server</h3>
-        <p>Invite codes are sealed with AES-256-GCM and posted to public, decentralized relays only until they're used. Each code works once, expires in 24 hours, and an admin approves every new member.</p>
+        <p>To join a family you need to find each other first, without a sign-up server. FamFind seals each invite with AES-256-GCM and drops it on public Nostr relays, a decentralized network anyone can run. The relays only ever see an encrypted blob. Each code works once, expires in 24 hours, and an admin approves every new member.</p>
       </div>
       <div class="layer">
         <span class="tag">Rust core · on-device intelligence</span>
@@ -342,6 +355,52 @@
         <span class="tag">designed to be verifiable</span>
         <h3>Privacy you don't have to take on faith</h3>
         <p>There's no analytics SDK and no push-notification server: every alert is created locally on the phone. Apple's privacy label for FamFind reads "Data Not Collected", because there's no FamFind backend to collect anything.</p>
+      </div>
+    </div>
+
+
+    <div class="protos">
+      <h3 class="sub">Open protocols under the hood</h3>
+      <p>FamFind doesn't invent its own networking or crypto. It's assembled from open, well-studied protocols, so there's no proprietary FamFind cloud in the loop.</p>
+
+      <div class="proto">
+        <div class="name">iroh<small>peer-to-peer networking, by n0</small></div>
+        <div>
+          <p>Every phone is an iroh endpoint identified by its own public key. iroh dials other family members by key rather than by IP address, punches through NATs and firewalls to make a direct connection, and only falls back to an encrypted relay when a direct path isn't possible. All family traffic (locations, chat, safety alerts) flows over these connections.</p>
+          <div class="chips"><span>QUIC (RFC 9000)</span><span>TLS 1.3</span><span>Ed25519 node keys</span><span>NAT hole punching</span><span>encrypted relay fallback</span></div>
+        </div>
+      </div>
+
+      <div class="proto">
+        <div class="name">Nostr<small>decentralized invite drop-box</small></div>
+        <div>
+          <p>Nostr is an open network of public relays that store signed messages. FamFind uses it as a dead drop for invites: the invite code is stretched with scrypt into a key, the invite is encrypted with it, signed by a throwaway key, and posted to public relays (relay.damus.io, nos.lol, relay.primal.net, relay.snort.social). Relays never see the code itself, and the event expires automatically. Only someone holding the code can find and open it.</p>
+          <div class="chips"><span>NIP-01 events</span><span>NIP-40 expiration</span><span>BIP-340 Schnorr / secp256k1</span><span>scrypt</span><span>HKDF-SHA256</span><span>AES-256-GCM</span></div>
+        </div>
+      </div>
+
+      <div class="proto">
+        <div class="name">Automerge<small>local-first sync (CRDTs)</small></div>
+        <div>
+          <p>Each family is an Automerge document: a conflict-free replicated data type that every phone holds in full. Phones exchange just the changes, edits made offline merge cleanly later, and no central server is ever the "source of truth".</p>
+          <div class="chips"><span>CRDT</span><span>offline-first</span><span>delta sync</span></div>
+        </div>
+      </div>
+
+      <div class="proto">
+        <div class="name">BIP-39<small>recovery phrase</small></div>
+        <div>
+          <p>Your private key can be written down as a standard 24-word recovery phrase, the same format used by hardware wallets, so you can restore your identity on a new phone without any account.</p>
+          <div class="chips"><span>BIP-39 English wordlist</span><span>256-bit key</span></div>
+        </div>
+      </div>
+
+      <div class="proto">
+        <div class="name">Rust + UniFFI<small>one core, native apps</small></div>
+        <div>
+          <p>The networking, sync and crypto live in a single memory-safe Rust core, compiled into the iPhone app and bridged to Swift with UniFFI. The app on top is built with React Native and native iOS frameworks (MapKit, Core Location, WidgetKit, App Intents).</p>
+          <div class="chips"><span>Rust</span><span>UniFFI</span><span>Swift</span><span>React Native</span></div>
+        </div>
       </div>
     </div>
 
